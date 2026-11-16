@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
@@ -15,21 +16,13 @@ class LoginController extends Controller
      * Menampilkan form login.
      * Jika pengguna sudah terotentikasi, langsung arahkan ke dashboard masing-masing.
      */
-    public function showLoginForm(): View|RedirectResponse
+    public function showLoginForm(): View
     {
-        if (Auth::check()) {
-            return $this->authenticatedRedirect(Auth::user());
-        }
-
         return view('auth.login');
     }
 
-    /**
-     * Menangani proses autentikasi pengguna.
-     */
     public function login(Request $request): RedirectResponse
     {
-        // 1. Validasi input: username dan password wajib diisi
         $request->validate([
             'username' => ['required', 'string'],
             'password' => ['required', 'string'],
@@ -38,45 +31,40 @@ class LoginController extends Controller
             'password.required' => 'Kata sandi wajib diisi.',
         ]);
 
-        $loginInput = $request->input('username');
-        $passwordInput = $request->input('password');
+        // Pengguna boleh login memakai username maupun email
+        $identifier = $request->input('username');
+        $identifierColumn = filter_var($identifier, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
-        // Mendukung login menggunakan username maupun email
-        $loginField = filter_var($loginInput, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+        $user = User::where($identifierColumn, $identifier)->first();
 
-        $credentials = [
-            $loginField => $loginInput,
-            'password' => $passwordInput,
-        ];
-
-        // 2. Cek kecocokan kredensial menggunakan mekanisme autentikasi bawaan Laravel (Auth::validate)
-        // Auth::validate melakukan verifikasi password secara aman via algoritma Bcrypt (Hash::check)
-        if (! Auth::validate($credentials)) {
+        if (! $user || ! Hash::check($request->input('password'), $user->password)) {
             return back()->withErrors([
                 'username' => 'Username atau kata sandi salah.',
             ])->onlyInput('username');
         }
 
-        // 3. Ambil data user yang berhasil divalidasi
-        $user = User::where($loginField, $loginInput)->first();
-
-        // 4. Tolak login jika akun berstatus nonaktif (is_active = false)
-        if (! $user || ! $user->is_active) {
+        if (! $user->is_active) {
             return back()->withErrors([
                 'username' => 'Akun Anda sedang dinonaktifkan.',
             ])->onlyInput('username');
         }
 
-        // 5. Login pengguna ke dalam session Laravel
-        Auth::login($user, $request->boolean('remember'));
+        if (! $user->dashboardRouteName()) {
+            return back()->withErrors([
+                'username' => 'Akun Anda belum memiliki peran. Hubungi Admin.',
+            ])->onlyInput('username');
+        }
 
-        // 6. Session Regeneration: Mencegah serangan Session Fixation
+        Auth::login($user, $request->boolean('remember'));
         $request->session()->regenerate();
 
-        // 7. Pengalihan halaman (Redirect) berdasarkan Role pengguna
-        return $this->authenticatedRedirect($user);
+        return $this->redirectToDashboard($user);
     }
 
+    protected function redirectToDashboard(User $user): RedirectResponse
+    {
+        return redirect()->intended(route($user->dashboardRouteName()));
+    }
     /**
      * Mengarahkan pengguna ke dashboard sesuai role yang dimilikinya.
      */
