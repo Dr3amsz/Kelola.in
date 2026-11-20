@@ -31,11 +31,7 @@ class LoginController extends Controller
             'password.required' => 'Kata sandi wajib diisi.',
         ]);
 
-        // Pengguna boleh login memakai username maupun email
-        $identifier = $request->input('username');
-        $identifierColumn = filter_var($identifier, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
-
-        $user = User::where($identifierColumn, $identifier)->first();
+        $user = User::findByIdentifier($request->input('username'));
 
         if (! $user || ! Hash::check($request->input('password'), $user->password)) {
             return back()->withErrors([
