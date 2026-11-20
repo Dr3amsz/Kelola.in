@@ -8,54 +8,49 @@ use Illuminate\Database\Seeder;
 
 class PermissionSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // 1. Master daftar permission sesuai modul Toko Sembako
         $permissions = [
-            // Modul Autentikasi & Kelola User (Fadilah)
             ['name' => 'Kelola Pengguna', 'slug' => 'kelola-user'],
             ['name' => 'Kelola Hak Akses', 'slug' => 'kelola-role-permission'],
 
-            // Modul Master Data Barang, Kategori, & Satuan (Rizki)
             ['name' => 'Kelola Kategori Barang', 'slug' => 'kelola-kategori'],
             ['name' => 'Kelola Satuan Barang', 'slug' => 'kelola-satuan'],
             ['name' => 'Kelola Barang', 'slug' => 'kelola-barang'],
             ['name' => 'Lihat Katalog Barang', 'slug' => 'lihat-barang'],
 
-            // Modul RORIS & Restock (Nadrina)
             ['name' => 'Kelola Pengadaan RORIS', 'slug' => 'kelola-roris'],
             ['name' => 'Lihat Laporan RORIS', 'slug' => 'lihat-laporan-roris'],
 
-            // Modul Kasir, Pemasukan Harian, & Dashboard (Immanuel)
             ['name' => 'Input Transaksi Kasir', 'slug' => 'input-transaksi'],
             ['name' => 'Lihat Pemasukan Harian', 'slug' => 'lihat-pemasukan'],
             ['name' => 'Lihat Laporan Pemasukan', 'slug' => 'lihat-laporan-pemasukan'],
             ['name' => 'Lihat Dashboard', 'slug' => 'lihat-dashboard'],
         ];
 
-        // Buat atau cari permission agar tidak terjadi duplikasi
-        foreach ($permissions as $perm) {
-            Permission::firstOrCreate(
-                ['slug' => $perm['slug']],
-                ['name' => $perm['name']]
+        // PERBAIKAN: Menggunakan updateOrCreate agar nama permission ikut diperbarui jika slug sudah tersedia.
+        foreach ($permissions as $permission) {
+            Permission::updateOrCreate(
+                ['slug' => $permission['slug']],
+                ['name' => $permission['name']]
             );
         }
 
-        // 2. Pemetaan Hak Akses ke Masing-Masing Role
         $adminRole = Role::where('slug', 'admin')->first();
         $pemilikRole = Role::where('slug', 'pemilik_toko')->first();
         $karyawanRole = Role::where('slug', 'karyawan')->first();
 
-        // Admin: Hak akses penuh ke seluruh fitur sistem
+        // PERBAIKAN: Admin hanya mendapatkan akses untuk mengelola pengguna dan hak akses.
         if ($adminRole) {
-            $allPermissionIds = Permission::pluck('id')->toArray();
-            $adminRole->permissions()->syncWithoutDetaching($allPermissionIds);
+            $adminPermissions = Permission::whereIn('slug', [
+                'kelola-user',
+                'kelola-role-permission',
+            ])->pluck('id')->toArray();
+
+            // PERBAIKAN: Menggunakan sync() agar permission lama yang tidak sesuai ikut dilepas.
+            $adminRole->permissions()->sync($adminPermissions);
         }
 
-        // Pemilik Toko: Pengawasan bisnis, dashboard, laporan pemasukan, cek stok, dan laporan RORIS
         if ($pemilikRole) {
             $pemilikPermissions = Permission::whereIn('slug', [
                 'lihat-dashboard',
@@ -65,10 +60,10 @@ class PermissionSeeder extends Seeder
                 'lihat-laporan-roris',
             ])->pluck('id')->toArray();
 
-            $pemilikRole->permissions()->syncWithoutDetaching($pemilikPermissions);
+            // PERBAIKAN: Menyamakan seluruh permission Pemilik Toko dengan hak akses yang ditentukan.
+            $pemilikRole->permissions()->sync($pemilikPermissions);
         }
 
-        // Karyawan: Operasional kasir, melihat katalog barang, rekap transaksi hari berjalan, dan input restock
         if ($karyawanRole) {
             $karyawanPermissions = Permission::whereIn('slug', [
                 'lihat-barang',
@@ -77,7 +72,8 @@ class PermissionSeeder extends Seeder
                 'kelola-roris',
             ])->pluck('id')->toArray();
 
-            $karyawanRole->permissions()->syncWithoutDetaching($karyawanPermissions);
+            // PERBAIKAN: Menyamakan seluruh permission Karyawan dengan hak akses operasionalnya.
+            $karyawanRole->permissions()->sync($karyawanPermissions);
         }
     }
 }
