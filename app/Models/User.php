@@ -87,4 +87,21 @@ class User extends Authenticatable
 
         return $this->role->permissions->contains('slug', $permissionSlug);
     }
+
+    public function dashboardRouteName(): ?string
+    {
+        return match ($this->role?->slug) {
+            'admin' => 'admin.dashboard',
+            'pemilik_toko' => 'pemilik.dashboard',
+            'karyawan' => 'karyawan.dashboard',
+            default => null,
+        };
+    }
+
+    /** Cari user berdasarkan username atau email. */
+    public static function findByIdentifier(string $identifier): ?self
+    {
+        $column = filter_var($identifier, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+        return static::where($column, $identifier)->first();
+    }
 }
