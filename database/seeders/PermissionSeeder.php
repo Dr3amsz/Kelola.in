@@ -69,7 +69,6 @@ class PermissionSeeder extends Seeder
                 'lihat-barang',
                 'input-transaksi',
                 'lihat-pemasukan',
-                'kelola-roris',
             ])->pluck('id')->toArray();
 
             // PERBAIKAN: Menyamakan seluruh permission Karyawan dengan hak akses operasionalnya.

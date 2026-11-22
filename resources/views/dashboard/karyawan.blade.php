@@ -1,83 +1,148 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Karyawan / Kasir - Kelola.in</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style> body { font-family: 'Plus Jakarta Sans', sans-serif; } </style>
-</head>
-<body class="bg-slate-50 min-h-screen">
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-30">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-amber-600 text-white rounded-xl flex items-center justify-center font-bold shadow-md shadow-amber-500/20">
-                    K
-                </div>
-                <div>
-                    <h1 class="text-base font-bold text-slate-800 leading-tight">Kelola.in</h1>
-                    <span class="text-xs text-amber-600 font-semibold tracking-wide uppercase">Dashboard Kasir / Staf</span>
-                </div>
-            </div>
+@extends('layouts.app')
 
-            <div class="flex items-center gap-3">
-                <div class="text-right">
-                    <p class="text-sm font-semibold text-slate-800">{{ auth()->user()->name }}</p>
-                    <p class="text-xs text-slate-400">{{ auth()->user()->email }}</p>
-                </div>
-                <!-- Tombol Profil -->
-                <a href="{{ route('profile.edit') }}" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition">
-                    Profil Saya
-                </a>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="px-3.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold rounded-lg border border-rose-200 transition">
-                        Keluar
-                    </button>
-                </form>
-            </div>
-        </div>
-    </header>
+@section('title', 'Dashboard Karyawan')
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="bg-gradient-to-r from-amber-600 to-orange-700 rounded-2xl p-6 sm:p-8 text-white shadow-xl mb-8">
-            <span class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs font-semibold uppercase tracking-wider">
-                Hak Akses: Karyawan / Kasir
-            </span>
-            <h2 class="text-2xl sm:text-3xl font-bold mt-3">Selamat Bertugas, {{ auth()->user()->name }}!</h2>
-            <p class="text-amber-100 text-sm mt-2 max-w-2xl">
-                Akses operasional harian kasir: catat transaksi sembako, periksa persediaan barang di etalase, dan catat barang masuk dari supplier.
+@section('content')
+    <!-- Banner Sapaan Karyawan / Kasir -->
+    <div class="bg-[#EEF5FF] rounded-[22px] p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 mb-7 relative overflow-hidden">
+        <div class="z-10 text-center sm:text-left">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100/80 text-amber-900 text-xs font-semibold uppercase tracking-wider mb-2">
+                <span class="w-2 h-2 rounded-full bg-amber-600"></span>
+                Karyawan / Kasir
+            </div>
+            <h1 class="text-2xl sm:text-[26px] font-bold text-[#0F2B5C] mb-1.5 tracking-tight">
+                Selamat Bertugas, {{ auth()->user()->name }}! 👋
+            </h1>
+            <p class="text-xs sm:text-sm text-[#64748B] font-medium max-w-xl">
+                Akses operasional harian toko sembako: catat transaksi kasir pelanggan, periksa ketersediaan barang di etalase, dan kelola pemasukan.
             </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center mb-4">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                </div>
-                <h3 class="font-bold text-slate-800 text-base">Transaksi Kasir</h3>
-                <p class="text-slate-500 text-xs mt-1">Modul Immanuel: Input transaksi penjualan sembako pelanggan harian.</p>
-            </div>
-
-            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-4">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                </div>
-                <h3 class="font-bold text-slate-800 text-base">Cek Stok Sembako</h3>
-                <p class="text-slate-500 text-xs mt-1">Modul Rizki: Cari ketersediaan beras, minyak, gula, dan bahan pokok lainnya.</p>
-            </div>
-
-            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mb-4">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
-                </div>
-                <h3 class="font-bold text-slate-800 text-base">Penerimaan Barang</h3>
-                <p class="text-slate-500 text-xs mt-1">Modul Nadrina: Catat barang masuk (*restock*) dari kiriman distributor.</p>
+        <!-- Ilustrasi Banner Kanan -->
+        <div class="z-10 shrink-0">
+            <div class="w-20 h-20 sm:w-24 sm:h-24 bg-[#1A6CF0] rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/25">
+                <svg class="w-10 h-10 sm:w-12 sm:h-12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
             </div>
         </div>
-    </main>
-</body>
-</html>
+    </div>
+
+    <!-- Tiga Kartu Statistik Karyawan -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-7">
+        <!-- 1. Transaksi Kasir -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:shadow-md transition flex items-center gap-4">
+            <div class="w-13 h-13 p-3.5 rounded-full bg-[#EEF5FF] text-[#1A6CF0] flex items-center justify-center shrink-0">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" />
+                </svg>
+            </div>
+            <div>
+                <p class="text-xs font-semibold text-[#64748B] mb-0.5">Sesi Kasir</p>
+                <p class="text-2xl font-bold text-slate-900 tracking-tight">Aktif</p>
+            </div>
+        </div>
+
+        <!-- 2. Katalog Barang -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:shadow-md transition flex items-center gap-4">
+            <div class="w-13 h-13 p-3.5 rounded-full bg-[#E6F9EE] text-[#10B981] flex items-center justify-center shrink-0">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+            </div>
+            <div>
+                <p class="text-xs font-semibold text-[#64748B] mb-0.5">Katalog Barang</p>
+                <p class="text-2xl font-bold text-slate-900 tracking-tight">120 Item</p>
+            </div>
+        </div>
+
+        <!-- 3. Status Operasional -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:shadow-md transition flex items-center gap-4">
+            <div class="w-13 h-13 p-3.5 rounded-full bg-[#FEF3C7] text-[#D97706] flex items-center justify-center shrink-0">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <div>
+                <p class="text-xs font-semibold text-[#64748B] mb-0.5">Operasional</p>
+                <p class="text-2xl font-bold text-slate-900 tracking-tight">Siap Layani</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dua Panel Bawah: Modul Operasional Kasir & Panduan Kerja -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Panel Kiri: Modul Operasional -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-5">
+                    <h2 class="text-base font-bold text-[#0F2B5C]">Operasional Toko</h2>
+                    <span class="text-xs text-slate-400 font-medium">Tugas Kasir</span>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="p-3.5 rounded-xl bg-slate-50 hover:bg-blue-50/60 border border-slate-100 transition flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-800">Transaksi Kasir</h3>
+                                <p class="text-xs text-slate-500">Catat transaksi penjualan sembako kepada pembeli.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3.5 rounded-xl bg-slate-50 hover:bg-blue-50/60 border border-slate-100 transition flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-800">Cek Stok Barang</h3>
+                                <p class="text-xs text-slate-500">Periksa persediaan sembako di etalase dan gudang.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3.5 rounded-xl bg-slate-50 hover:bg-blue-50/60 border border-slate-100 transition flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-800">Riwayat Penjualan</h3>
+                                <p class="text-xs text-slate-500">Pantau catatan transaksi penjualan yang telah diselesaikan.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Kanan: Petunjuk Operasional Kasir -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-5">
+                    <h2 class="text-base font-bold text-[#0F2B5C]">Petunjuk Kasir</h2>
+                    <span class="text-xs text-slate-400 font-medium">Standar Toko</span>
+                </div>
+
+                <div class="space-y-3.5 text-xs text-slate-600">
+                    <div class="p-3 rounded-xl bg-blue-50/50 border border-blue-100/50 flex items-start gap-3">
+                        <div class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center shrink-0 font-bold text-[11px]">1</div>
+                        <p class="pt-0.5"><strong class="text-slate-800">Periksa Jumlah Fisik:</strong> Pastikan barang yang diserahkan ke pembeli sesuai dengan nota penjualan.</p>
+                    </div>
+                    <div class="p-3 rounded-xl bg-emerald-50/50 border border-emerald-100/50 flex items-start gap-3">
+                        <div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 font-bold text-[11px]">2</div>
+                        <p class="pt-0.5"><strong class="text-slate-800">Pemasukan Tunai:</strong> Hitung uang tunai pembayaran dengan cermat dan berikan kembalian secara tepat.</p>
+                    </div>
+                    <div class="p-3 rounded-xl bg-amber-50/50 border border-amber-100/50 flex items-start gap-3">
+                        <div class="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center shrink-0 font-bold text-[11px]">3</div>
+                        <p class="pt-0.5"><strong class="text-slate-800">Lapor Stok Menipis:</strong> Segera beri tahu Kepala Toko bila stok beras, telur, atau minyak menipis.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
