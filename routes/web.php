@@ -44,7 +44,27 @@ Route::middleware(['auth'])->group(function () {
     // -------------------------------------------------------------
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', function () {
-            return view('dashboard.admin');
+            $totalUsers = \App\Models\User::count();
+            $activeUsers = \App\Models\User::where('is_active', true)->count();
+            $inactiveUsers = \App\Models\User::where('is_active', false)->count();
+
+            // Ringkasan sistem: jumlah user per peran (Admin, Pemilik Toko, Karyawan)
+            $roleCounts = [
+                'admin' => \App\Models\User::whereHas('role', fn ($q) => $q->where('slug', 'admin'))->count(),
+                'pemilik_toko' => \App\Models\User::whereHas('role', fn ($q) => $q->where('slug', 'pemilik_toko'))->count(),
+                'karyawan' => \App\Models\User::whereHas('role', fn ($q) => $q->where('slug', 'karyawan'))->count(),
+            ];
+
+            // Aktivitas terbaru: 5 user yang terakhir dibuat
+            $recentUsers = \App\Models\User::with('role')->latest()->take(5)->get();
+
+            return view('dashboard.admin', compact(
+                'totalUsers',
+                'activeUsers',
+                'inactiveUsers',
+                'roleCounts',
+                'recentUsers'
+            ));
         })->name('dashboard');
 
         // Modul 1: Kelola Data Pengguna (CRUD & Toggle Status)
