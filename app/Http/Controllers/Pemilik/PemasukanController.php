@@ -47,6 +47,38 @@ class PemasukanController extends Controller
     }
 
     /**
+     * Riwayat seluruh pemasukan dengan filter rentang tanggal dan metode bayar.
+     */
+    public function riwayat(Request $request)
+    {
+        $this->authorizeRole();
+
+        $query = Pemasukan::with('user')
+            ->withCount('details')
+            ->orderByDesc('tanggal')
+            ->orderByDesc('id');
+
+        if ($request->filled('dari')) {
+            $query->whereDate('tanggal', '>=', $request->dari);
+        }
+        if ($request->filled('sampai')) {
+            $query->whereDate('tanggal', '<=', $request->sampai);
+        }
+        if ($request->filled('metode_bayar') && in_array($request->metode_bayar, [
+            Pemasukan::METODE_TUNAI,
+            Pemasukan::METODE_TRANSFER,
+            Pemasukan::METODE_QRIS,
+        ])) {
+            $query->where('metode_bayar', $request->metode_bayar);
+        }
+
+        $totalPeriode  = (clone $query)->sum('total_pemasukan');
+        $pemasukanList = $query->paginate(10)->withQueryString();
+
+        return view('pemilik.pemasukan.riwayat', compact('pemasukanList', 'totalPeriode'));
+    }
+
+    /**
      * Form catat pemasukan baru.
      */
     public function create()
@@ -91,7 +123,19 @@ class PemasukanController extends Controller
             ->with('success', 'Data pemasukan berhasil disimpan.');
     }
 
-    // Helper 
+    /**
+     * Detail satu transaksi pemasukan beserta seluruh rincian barangnya.
+     */
+    public function show(Pemasukan $pemasukan)
+    {
+        $this->authorizeRole();
+
+        $pemasukan->load('details', 'user');
+
+        return view('pemilik.pemasukan.show', compact('pemasukan'));
+    }
+
+    // ─── Helper ────────────────────────────────────────────────────────────────
 
     private function authorizeRole(): void
     {

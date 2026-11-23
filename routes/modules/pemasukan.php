@@ -14,3 +14,5 @@ use Illuminate\Support\Facades\Route;
 Route::get('/pemasukan', [PemasukanController::class, 'index'])->name('pemasukan.index');
 Route::get('/pemasukan/tambah', [PemasukanController::class, 'create'])->name('pemasukan.create');
 Route::post('/pemasukan', [PemasukanController::class, 'store'])->name('pemasukan.store');
+Route::get('/pemasukan/riwayat', [PemasukanController::class, 'riwayat'])->name('pemasukan.riwayat');
+Route::get('/pemasukan/{pemasukan}', [PemasukanController::class, 'show'])->name('pemasukan.show');
