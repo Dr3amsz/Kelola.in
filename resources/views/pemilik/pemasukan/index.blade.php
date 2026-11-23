@@ -121,8 +121,13 @@
                 <tbody class="divide-y divide-slate-50">
                     @foreach ($pemasukanList as $item)
                         <tr class="hover:bg-slate-50/60 transition">
-                            <td class="px-5 py-3.5 font-mono text-sm font-semibold text-slate-700">
+                            <td class="px-5 py-3.5">
+                                <span class="font-mono text-sm font-semibold text-slate-700">
                                 #PMS-{{ str_pad($item->id, 4, '0', STR_PAD_LEFT) }}
+                                </span>
+                                @if ($item->catatan)
+                                <p class="text-xs text-slate-400 mt-0.5 truncate max-w-[200px]">{{ $item->catatan }}</p>
+                                @endif
                             </td>
                             <td class="px-5 py-3.5 text-slate-700">
                                 {{ $item->tanggal->format('d-m-Y') }}
@@ -144,6 +149,17 @@
                         </tr>
                     @endforeach
                 </tbody>
+                <tfoot class="bg-slate-50 border-t border-slate-100">
+                 <tr>
+                    <td colspan="4" class="px-5 py-3 text-right text-xs font-bold text-slate-600 uppercase">
+                        Total Pemasukan ({{ \Carbon\Carbon::parse($tanggal)->format('d-m-Y') }})
+                    </td>
+                    <td class="px-5 py-3 text-right text-sm font-bold text-emerald-600">
+                        Rp {{ number_format($totalHarian, 0, ',', '.') }}
+                    </td>
+                    <td></td>
+                    </tr>
+                    </tfoot>   
             </table>
         </div>
 
