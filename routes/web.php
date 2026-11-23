@@ -84,6 +84,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', function () {
             return view('dashboard.pemilik');
         })->name('dashboard');
+
+        // Modul RORIS (Nadrina)
+        require __DIR__.'/modules/roris.php';
     });
 
     // -------------------------------------------------------------

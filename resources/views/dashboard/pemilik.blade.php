@@ -162,4 +162,6 @@
             </div>
         </div>
     </div>
+
+    @include('dashboard.partials.grafik-roris')
 @endsection
