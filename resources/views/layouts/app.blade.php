@@ -145,8 +145,8 @@
 
                         <!-- Pengecekan RORIS -->
                         @php
-                            $route = Route::has('roris.index') ? route('roris.index') : '#';
-                            $isActive = request()->routeIs('roris.*');
+                            $route = Route::has('pemilik.roris.index') ? route('pemilik.roris.index') : '#';
+                            $isActive = request()->routeIs('pemilik.roris.*') && !request()->routeIs('pemilik.roris.laporan*');
                         @endphp
                         <a href="{{ $route }}"
                            class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13px] font-semibold transition {{ $isActive ? 'bg-[#3B82F6] text-white shadow-md shadow-blue-500/20' : 'text-[#0F2B5C] hover:bg-[#D4E3FB]/70' }}">
@@ -182,17 +182,17 @@
                             <span>Riwayat Pemasukan</span>
                         </a>
 
-                        <!-- Laporan -->
+                        <!-- Laporan RORIS -->
                         @php
-                            $route = Route::has('laporan.index') ? route('laporan.index') : '#';
-                            $isActive = request()->routeIs('laporan.*');
+                            $route = Route::has('pemilik.roris.laporan') ? route('pemilik.roris.laporan') : '#';
+                            $isActive = request()->routeIs('pemilik.roris.laporan*');
                         @endphp
                         <a href="{{ $route }}"
                            class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13px] font-semibold transition {{ $isActive ? 'bg-[#3B82F6] text-white shadow-md shadow-blue-500/20' : 'text-[#0F2B5C] hover:bg-[#D4E3FB]/70' }}">
                             <svg class="w-4 h-4 shrink-0 {{ $isActive ? 'text-white' : 'text-[#0F2B5C]' }}" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            <span>Laporan</span>
+                            <span>Laporan RORIS</span>
                         </a>
 
                     {{-- 3. MENU KARYAWAN --}}
