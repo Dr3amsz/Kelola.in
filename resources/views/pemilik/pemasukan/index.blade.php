@@ -61,8 +61,8 @@
                                 {{ $item->tanggal->format('d-m-Y') }}
                             </td>
                             <td class="px-5 py-3.5">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 uppercase">
-                                    {{ $item->metode_bayar }}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold {{ $item->badgeMetodeClass() }}">
+                                    {{ $item->labelMetode() }}
                                 </span>
                             </td>
                             <td class="px-5 py-3.5 text-center text-slate-600">

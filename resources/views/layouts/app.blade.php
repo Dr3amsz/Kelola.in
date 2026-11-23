@@ -179,7 +179,7 @@
                         <!-- Pemasukan Harian -->
                         @php
                             $route = Route::has('pemilik.pemasukan.index') ? route('pemilik.pemasukan.index') : '#';
-                            $isActive = request()->routeIs('pemilik.pemasukan.index');
+                            $isActive = request()->routeIs('pemilik.pemasukan.index', 'pemilik.pemasukan.create');
                         @endphp
                         <a href="{{ $route }}"
                             class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13px] font-semibold transition {{ $isActive ? 'bg-[#3B82F6] text-white shadow-md shadow-blue-500/20' : 'text-[#0F2B5C] hover:bg-[#D4E3FB]/70' }}">
