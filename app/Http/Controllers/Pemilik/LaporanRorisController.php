@@ -25,10 +25,10 @@ class LaporanRorisController extends Controller
 
         if ($request->filled('dari') || $request->filled('sampai')) {
             // Validasi
-            $dari   = $request->dari   ?? null;
+            $dari = $request->dari ?? null;
             $sampai = $request->sampai ?? null;
 
-            if (! $dari || ! $sampai) {
+            if (!$dari || !$sampai) {
                 $errors[] = 'Tanggal awal dan tanggal akhir wajib diisi.';
             } elseif ($dari > $sampai) {
                 $errors[] = 'Tanggal awal tidak boleh lebih besar dari tanggal akhir.';
@@ -40,15 +40,19 @@ class LaporanRorisController extends Controller
                     ->orderBy('tanggal')
                     ->get();
 
-                $totalModal      = $rorisList->sum('total_modal');
+                $totalModal = $rorisList->sum('total_modal');
                 $totalPendapatan = $rorisList->sum('total_pendapatan');
-                $nilaiRoris      = $rorisList->sum('nilai_roris');
+                $nilaiRoris = $rorisList->sum('nilai_roris');
             }
         }
 
         return view('pemilik.laporan-roris.index', compact(
-            'rorisList', 'totalModal', 'totalPendapatan', 'nilaiRoris',
-            'validated', 'errors'
+            'rorisList',
+            'totalModal',
+            'totalPendapatan',
+            'nilaiRoris',
+            'validated',
+            'errors'
         ));
     }
 
@@ -59,10 +63,10 @@ class LaporanRorisController extends Controller
     {
         $this->authorizePermission('lihat-laporan-roris');
 
-        $dari   = $request->dari   ?? null;
+        $dari = $request->dari ?? null;
         $sampai = $request->sampai ?? null;
 
-        if (! $dari || ! $sampai || $dari > $sampai) {
+        if (!$dari || !$sampai || $dari > $sampai) {
             return redirect()->route('pemilik.roris.laporan')
                 ->withErrors(['dari' => 'Periode tidak valid untuk cetak PDF.']);
         }
@@ -73,12 +77,17 @@ class LaporanRorisController extends Controller
             ->orderBy('tanggal')
             ->get();
 
-        $totalModal      = $rorisList->sum('total_modal');
+        $totalModal = $rorisList->sum('total_modal');
         $totalPendapatan = $rorisList->sum('total_pendapatan');
-        $nilaiRoris      = $rorisList->sum('nilai_roris');
+        $nilaiRoris = $rorisList->sum('nilai_roris');
 
         $pdf = Pdf::loadView('pemilik.laporan-roris.pdf', compact(
-            'rorisList', 'totalModal', 'totalPendapatan', 'nilaiRoris', 'dari', 'sampai'
+            'rorisList',
+            'totalModal',
+            'totalPendapatan',
+            'nilaiRoris',
+            'dari',
+            'sampai'
         ))->setPaper('a4', 'landscape');
 
         $filename = 'Laporan_RORIS_' . $dari . '_sd_' . $sampai . '.pdf';
@@ -93,10 +102,10 @@ class LaporanRorisController extends Controller
     {
         $this->authorizePermission('lihat-laporan-roris');
 
-        $dari   = $request->dari   ?? null;
+        $dari = $request->dari ?? null;
         $sampai = $request->sampai ?? null;
 
-        if (! $dari || ! $sampai || $dari > $sampai) {
+        if (!$dari || !$sampai || $dari > $sampai) {
             return redirect()->route('pemilik.roris.laporan')
                 ->withErrors(['dari' => 'Periode tidak valid untuk ekspor Excel.']);
         }
@@ -110,7 +119,7 @@ class LaporanRorisController extends Controller
 
     private function authorizePermission(string $slug): void
     {
-        if (! auth()->user()?->hasRole('pemilik_toko')) {
+        if (!auth()->user()?->hasRole('pemilik_toko')) {
             abort(403, 'Akses Ditolak: Halaman ini hanya untuk Pemilik Toko.');
         }
     }

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 class RorisController extends Controller
 {
     /**
-     * Daftar riwayat RORIS (pagination 10, filter tanggal + status).
+     * Daftar riwayat RORIS (pagination 10, filter tanggal).
      */
     public function index(Request $request)
     {
@@ -27,9 +27,6 @@ class RorisController extends Controller
         }
         if ($request->filled('sampai')) {
             $query->whereDate('tanggal', '<=', $request->sampai);
-        }
-        if ($request->filled('status') && in_array($request->status, [Roris::STATUS_DIAJUKAN, Roris::STATUS_SELESAI])) {
-            $query->where('status', $request->status);
         }
 
         $rorisList = $query->paginate(10)->withQueryString();
@@ -55,20 +52,19 @@ class RorisController extends Controller
         $detailsRaw = collect($request->validated()['details']);
 
         // Hitung subtotal tiap baris
-        $details = $detailsRaw->map(fn ($item) => RorisCalculator::hitungDetail($item));
+        $details = $detailsRaw->map(fn($item) => RorisCalculator::hitungDetail($item));
 
         // Hitung header dari detail yang sudah dihitung
         $header = RorisCalculator::hitungHeader($details);
 
         DB::transaction(function () use ($request, $details, $header) {
             $roris = Roris::create([
-                'tanggal'          => $request->tanggal,
-                'user_id'          => auth()->id(),
-                'catatan'          => $request->catatan,
-                'status'           => $request->status,
-                'total_modal'      => $header['total_modal'],
+                'tanggal' => $request->tanggal,
+                'user_id' => auth()->id(),
+                'catatan' => $request->catatan,
+                'total_modal' => $header['total_modal'],
                 'total_pendapatan' => $header['total_pendapatan'],
-                'nilai_roris'      => $header['nilai_roris'],
+                'nilai_roris' => $header['nilai_roris'],
             ]);
 
             $roris->details()->createMany($details->toArray());
@@ -94,7 +90,7 @@ class RorisController extends Controller
 
     private function authorizeRole(): void
     {
-        if (! auth()->user()?->hasRole('pemilik_toko')) {
+        if (!auth()->user()?->hasRole('pemilik_toko')) {
             abort(403, 'Akses Ditolak: Halaman ini hanya untuk Pemilik Toko.');
         }
     }

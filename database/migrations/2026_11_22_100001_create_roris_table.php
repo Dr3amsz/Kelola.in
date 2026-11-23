@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      * Tabel header RORIS (stok opname / pengecekan barang).
@@ -21,7 +20,6 @@ return new class extends Migration
             $table->decimal('total_pendapatan', 15, 2)->default(0)->comment('Σ subtotal_pendapatan semua detail');
             $table->decimal('nilai_roris', 15, 2)->default(0)->comment('total_pendapatan - total_modal');
             $table->text('catatan')->nullable()->comment('Catatan opsional dari Pemilik Toko');
-            $table->string('status')->default('diajukan')->comment('diajukan | selesai');
             $table->timestamps();
         });
     }

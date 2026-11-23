@@ -16,7 +16,6 @@ class StoreRorisRequest extends FormRequest
     {
         return [
             'tanggal'                      => ['required', 'date', 'date_format:Y-m-d'],
-            'status'                       => ['required', 'in:diajukan,selesai'],
             'catatan'                      => ['nullable', 'string', 'max:1000'],
 
             // Detail baris-baris barang
@@ -35,8 +34,6 @@ class StoreRorisRequest extends FormRequest
         return [
             'tanggal.required'                   => 'Tanggal RORIS wajib diisi.',
             'tanggal.date'                        => 'Format tanggal tidak valid.',
-            'status.required'                    => 'Status RORIS wajib dipilih.',
-            'status.in'                          => 'Status harus berupa Diajukan atau Selesai.',
             'details.required'                   => 'Minimal harus ada satu baris barang.',
             'details.min'                        => 'Minimal harus ada satu baris barang.',
             'details.*.kode_barang.required'     => 'Kode barang wajib diisi pada baris :position.',
