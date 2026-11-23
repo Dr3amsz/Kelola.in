@@ -1,33 +1,64 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+namespace App\Models;
 
-return new class extends Migration
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Pemasukan extends Model
 {
-    /**
-     * Tabel pemasukan harian toko sembako.
-     */
-    public function up(): void
+    protected $table = 'pemasukan_harian';
+
+    protected $fillable = [
+        'tanggal',
+        'user_id',
+        'metode_bayar',
+        'total_pemasukan',
+        'catatan',
+    ];
+
+    protected function casts(): array
     {
-        Schema::create('pemasukan', function (Blueprint $table) {
-            $table->id();
-            $table->date('tanggal')->index()->comment('Tanggal pemasukan dicatat');
-            $table->foreignId('user_id')->constrained('users')->restrictOnDelete()
-                ->comment('Pemilik toko yang mencatat pemasukan');
-            $table->string('keterangan', 255)->comment('Sumber atau deskripsi pemasukan');
-            $table->decimal('nominal', 15, 2)->comment('Jumlah pemasukan dalam rupiah');
-            $table->text('catatan')->nullable()->comment('Catatan tambahan opsional');
-            $table->timestamps();
-        });
+        return [
+            'tanggal'         => 'date',
+            'total_pemasukan' => 'decimal:2',
+        ];
     }
 
-    /**
-     * Hapus tabel pemasukan jika rollback.
-     */
-    public function down(): void
+    // Konstanta Metode Bayar 
+
+    const METODE_TUNAI    = 'tunai';
+    const METODE_TRANSFER = 'transfer';
+    const METODE_QRIS     = 'qris';
+
+    public function labelMetode(): string
     {
-        Schema::dropIfExists('pemasukan');
+        return match ($this->metode_bayar) {
+            self::METODE_TRANSFER => 'Transfer',
+            self::METODE_QRIS     => 'QRIS',
+            default               => 'Tunai',
+        };
     }
-};
+
+    public function badgeMetodeClass(): string
+    {
+        return match ($this->metode_bayar) {
+            self::METODE_TRANSFER => 'bg-indigo-50 text-indigo-700',
+            self::METODE_QRIS     => 'bg-emerald-50 text-emerald-700',
+            default               => 'bg-blue-50 text-blue-700',
+        };
+    }
+
+    // Relasi 
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function details(): HasMany
+    {
+        return $this->hasMany(DetailPemasukan::class, 'pemasukan_harian_id');
+    }
+}
