@@ -4,10 +4,10 @@
 
 @section('content')
 {{-- Header --}}
-<div class="flex items-center justify-between mb-6">
+<div class="flex flex-wrap items-center justify-between gap-3 mb-6">
     <div>
         <h1 class="text-xl font-bold text-[#0F2B5C]">Pemasukan Harian</h1>
-        <p class="text-xs text-slate-500 mt-0.5">Catat dan kelola pemasukan penjualan toko sembako.</p>
+        <p class="text-xs text-slate-500 mt-0.5">Catat dan hitung total pemasukan harian toko sembako.</p>
     </div>
     <a href="{{ route('pemilik.pemasukan.create') }}"
        class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl shadow-sm transition">
@@ -28,7 +28,74 @@
     </div>
 @endif
 
-{{-- Tabel Daftar Pemasukan --}}
+{{-- Pilih Tanggal untuk Hitung Total Harian --}}
+<form method="GET" action="{{ route('pemilik.pemasukan.index') }}"
+      class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 mb-5 flex flex-wrap items-end gap-3">
+    <div>
+        <label class="text-xs font-semibold text-slate-600 block mb-1">Tanggal Perhitungan</label>
+        <input type="date" name="tanggal" value="{{ $tanggal }}"
+               class="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+    </div>
+    <button type="submit"
+            class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition">
+        Hitung Total
+    </button>
+    @if ($tanggal !== now()->toDateString())
+        <a href="{{ route('pemilik.pemasukan.index') }}"
+           class="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-lg transition">
+            Hari Ini
+        </a>
+    @endif
+</form>
+
+{{-- Ringkasan Total Harian --}}
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
+    <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex items-center gap-4">
+        <div class="w-12 h-12 rounded-full bg-[#E6F9EE] text-[#10B981] flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+        </div>
+        <div>
+            <p class="text-xs font-semibold text-[#64748B] mb-0.5">
+                Total Harian ({{ \Carbon\Carbon::parse($tanggal)->format('d-m-Y') }})
+            </p>
+            <p class="text-xl font-bold text-emerald-600 tracking-tight">
+                Rp {{ number_format($totalHarian, 0, ',', '.') }}
+            </p>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex items-center gap-4">
+        <div class="w-12 h-12 rounded-full bg-[#EEF5FF] text-[#1A6CF0] flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
+            </svg>
+        </div>
+        <div>
+            <p class="text-xs font-semibold text-[#64748B] mb-0.5">Jumlah Transaksi</p>
+            <p class="text-xl font-bold text-slate-900 tracking-tight">{{ $jumlahTransaksi }} Transaksi</p>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex items-center gap-4">
+        <div class="w-12 h-12 rounded-full bg-[#FEF3C7] text-[#D97706] flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+            </svg>
+        </div>
+        <div>
+            <p class="text-xs font-semibold text-[#64748B] mb-0.5">Tunai / Non-Tunai</p>
+            <p class="text-sm font-bold text-slate-900">
+                Rp {{ number_format($totalTunai, 0, ',', '.') }}
+                <span class="text-slate-400 font-normal">/</span>
+                Rp {{ number_format($totalNonTunai, 0, ',', '.') }}
+            </p>
+        </div>
+    </div>
+</div>
+
+{{-- Tabel Daftar Pemasukan pada Tanggal Terpilih --}}
 <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
     @if ($pemasukanList->isEmpty())
         <div class="py-16 text-center text-slate-400">
@@ -36,7 +103,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                       d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
             </svg>
-            <p class="text-sm font-medium">Belum ada data pemasukan yang dicatat.</p>
+            <p class="text-sm font-medium">Tidak ada pemasukan pada tanggal {{ \Carbon\Carbon::parse($tanggal)->format('d-m-Y') }}.</p>
         </div>
     @else
         <div class="overflow-x-auto">
