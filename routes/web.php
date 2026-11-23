@@ -87,6 +87,9 @@ Route::middleware(['auth'])->group(function () {
 
         // Modul RORIS (Nadrina)
         require __DIR__.'/modules/roris.php';
+
+        // Modul Pemasukan Harian (Immanuel)
+        require __DIR__.'/modules/pemasukan.php';
     });
 
     // -------------------------------------------------------------
