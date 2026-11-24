@@ -33,7 +33,8 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('pemilik.pemasukan.update', $pemasukan) }}" id="pemasukanForm">
+    <form method="POST" action="{{ route('pemilik.pemasukan.update', $pemasukan) }}" id="pemasukanForm"
+    onsubmit="return confirm('Simpan perubahan data pemasukan ini?')">
         @csrf
         @method('PUT')
 
@@ -155,12 +156,17 @@
             </div>
 
             {{-- Ringkasan Total --}}
-            <div class="mt-5 pt-4 border-t border-slate-100 flex justify-end">
+                <div class="mt-5 pt-4 border-t border-slate-100 flex flex-wrap justify-end gap-6">
                 <div class="text-right">
-                    <p class="text-xs text-slate-500">Total Pemasukan</p>
+                    <p class="text-xs text-slate-400">Total Sebelumnya</p>
+                    <p class="text-sm font-semibold text-slate-500">
+                        Rp {{ number_format($pemasukan->total_pemasukan, 0, ',', '.') }}
+                    </p>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs text-slate-500">Total Setelah Diubah</p>
                     <p id="previewTotal" class="text-base font-bold text-emerald-600">Rp 0</p>
                 </div>
-            </div>
         </div>
 
         {{-- Tombol Submit --}}
