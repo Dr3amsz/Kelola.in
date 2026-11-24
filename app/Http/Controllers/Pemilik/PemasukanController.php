@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Pemilik;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePemasukanRequest;
+use App\Http\Requests\UpdatePemasukanRequest;
 use App\Models\Pemasukan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -135,7 +136,54 @@ class PemasukanController extends Controller
         return view('pemilik.pemasukan.show', compact('pemasukan'));
     }
 
-    // ─── Helper ────────────────────────────────────────────────────────────────
+/**
+     * Form ubah data pemasukan.
+     */
+    public function edit(Pemasukan $pemasukan)
+    {
+        $this->authorizeRole();
+
+        $pemasukan->load('details');
+
+        return view('pemilik.pemasukan.edit', compact('pemasukan'));
+    }
+
+    /**
+     * Perbarui data pemasukan beserta rincian barangnya.
+     */
+    public function update(UpdatePemasukanRequest $request, Pemasukan $pemasukan)
+    {
+        $details = collect($request->validated()['details'])->map(function ($item) {
+            $subtotal = (float) $item['qty'] * (float) $item['harga_satuan'];
+
+            return [
+                'nama_barang'  => $item['nama_barang'],
+                'satuan'       => $item['satuan'],
+                'qty'          => $item['qty'],
+                'harga_satuan' => $item['harga_satuan'],
+                'subtotal'     => $subtotal,
+            ];
+        });
+
+        $totalPemasukan = $details->sum('subtotal');
+
+        DB::transaction(function () use ($request, $pemasukan, $details, $totalPemasukan) {
+            $pemasukan->update([
+                'tanggal'         => $request->tanggal,
+                'metode_bayar'    => $request->metode_bayar,
+                'total_pemasukan' => $totalPemasukan,
+                'catatan'         => $request->catatan,
+            ]);
+
+            $pemasukan->details()->delete();
+            $pemasukan->details()->createMany($details->toArray());
+        });
+
+        return redirect()->route('pemilik.pemasukan.show', $pemasukan)
+            ->with('success', 'Data pemasukan berhasil diperbarui.');
+    }
+
+    // Helper 
 
     private function authorizeRole(): void
     {

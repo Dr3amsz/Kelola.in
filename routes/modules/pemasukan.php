@@ -16,3 +16,5 @@ Route::get('/pemasukan/tambah', [PemasukanController::class, 'create'])->name('p
 Route::post('/pemasukan', [PemasukanController::class, 'store'])->name('pemasukan.store');
 Route::get('/pemasukan/riwayat', [PemasukanController::class, 'riwayat'])->name('pemasukan.riwayat');
 Route::get('/pemasukan/{pemasukan}', [PemasukanController::class, 'show'])->name('pemasukan.show');
+Route::get('/pemasukan/{pemasukan}/edit', [PemasukanController::class, 'edit'])->name('pemasukan.edit');
+Route::put('/pemasukan/{pemasukan}', [PemasukanController::class, 'update'])->name('pemasukan.update');
